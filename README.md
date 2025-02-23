@@ -49,4 +49,4 @@ It has some limitations and flaws, feel free to point them out as you implement 
 1. The data structure holding orders can be limited to a certain size to prevent memory issues.
    A sliding window mechanism can be implemented to remove old orders and load them from Redis as per market price movement.
 2. The system can be made more fault-tolerant by implementing a backup mechanism to store orders in a secondary database.
-3. Orders for priority clients can be given preference by implementing a priority queue.
+3. Orders for priority clients can be given preference by holding them in a separate queue.
