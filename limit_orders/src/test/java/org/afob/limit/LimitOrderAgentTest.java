@@ -146,6 +146,15 @@ public class LimitOrderAgentTest {
         assertFalse(orderMap.get(productId).pendingBuyOrders.isEmpty());
     }
 
+    /**
+     * 3 IBM buy order having limit price - 1000, 1001, 1000.5
+     * 3 IBM sell order having limit price - 99, 99.5, 1000, 1005
+     * For Market Price 1000 - 3 buy orders should be executed and 3 sell orders should be executed
+     *     - Buy order - 1000, 1001, 1000.5 are triggered for execution
+     *     - Sell order - 999, 999.5, 1000 are triggered for execution
+     * @throws InterruptedException
+     * @throws ExecutionClient.ExecutionException
+     */
     @Test
     public void testPriceTickInvokesBuyMultipleTimes() throws InterruptedException, ExecutionClient.ExecutionException {
         String productId = "IBM";
@@ -157,8 +166,8 @@ public class LimitOrderAgentTest {
         limitOrderAgent.addOrder(true, productId, BigDecimal.valueOf(100), BigDecimal.valueOf(1000.5), true);
 
         //Some sell orders
-        limitOrderAgent.addOrder(false, productId, BigDecimal.valueOf(100), BigDecimal.valueOf(99), true);
-        limitOrderAgent.addOrder(false, productId, BigDecimal.valueOf(100), BigDecimal.valueOf(99.5), true);
+        limitOrderAgent.addOrder(false, productId, BigDecimal.valueOf(100), BigDecimal.valueOf(999), true);
+        limitOrderAgent.addOrder(false, productId, BigDecimal.valueOf(100), BigDecimal.valueOf(999.5), true);
         limitOrderAgent.addOrder(false, productId, BigDecimal.valueOf(100), BigDecimal.valueOf(1000), true);
         limitOrderAgent.addOrder(false, productId, BigDecimal.valueOf(100), BigDecimal.valueOf(1005), true);
 
