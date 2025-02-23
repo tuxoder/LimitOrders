@@ -105,6 +105,8 @@ public class LimitOrderAgent implements PriceListener {
             );
 
             CompletableFuture.allOf(buyOrderTask, sellOrderTask).join();
+
+            //we would want to publish the orders to kafka for update to Redis and DB
         });
     }
 

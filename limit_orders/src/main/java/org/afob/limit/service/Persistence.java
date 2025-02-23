@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface Persistence {
 
-    public abstract void persist(Order order);
+    public void persist(Order order);
 
     List<Order> getAllOrders();
 }

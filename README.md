@@ -48,5 +48,8 @@ It has some limitations and flaws, feel free to point them out as you implement 
 ### Further improvements
 1. The data structure holding orders can be limited to a certain size to prevent memory issues.
    A sliding window mechanism can be implemented to remove old orders and load them from Redis as per market price movement.
-2. The system can be made more fault-tolerant by implementing a backup mechanism to store orders in a secondary database.
+2. A further improvement could be to partition the distribution of orders based on the product.
+   For example: The concurrent hash map can have 10 entries for IBM based on the opening price. 
+   Say, IBM opens 100 then roughly by calculating the upper circuit and lower circuit we can distribute the orders in concurrent hash map in 10 buckets.
+3. The system can be made more fault-tolerant by implementing a backup mechanism to store orders in a secondary database.
 3. Orders for priority clients can be given preference by holding them in a separate queue.
