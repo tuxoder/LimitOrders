@@ -45,9 +45,9 @@ public class LimitOrderAgentTest {
         BigDecimal secondOrderAmount = new BigDecimal("100");
         BigDecimal secondOrderPrice = new BigDecimal("1500.00");
 
-        limitOrderAgent.addOrder(true, productId, amount, price);
-        limitOrderAgent.addOrder(false, productId, amount, price);
-        limitOrderAgent.addOrder(true, productId, secondOrderAmount, secondOrderPrice);
+        limitOrderAgent.addOrder(true, productId, amount, price, true);
+        limitOrderAgent.addOrder(false, productId, amount, price, true);
+        limitOrderAgent.addOrder(true, productId, secondOrderAmount, secondOrderPrice, true);
 
         ConcurrentHashMap<String, LimitOrderAgent.PendingOrdersBook> orderMap = limitOrderAgent.getProductToOrdersMap();
         assertTrue(orderMap.containsKey(productId));
@@ -65,7 +65,7 @@ public class LimitOrderAgentTest {
         BigDecimal amount = new BigDecimal("100");
         BigDecimal price = new BigDecimal("1000.00");
 
-        limitOrderAgent.addOrder(true, productId, amount, price);
+        limitOrderAgent.addOrder(true, productId, amount, price, true);
         limitOrderAgent.priceTick(productId, price);
 
         verify(executionClient, timeout(1000)).buy(eq(productId), eq(amount.intValue()));
@@ -77,8 +77,8 @@ public class LimitOrderAgentTest {
         BigDecimal amount = new BigDecimal("100");
         BigDecimal price = new BigDecimal("1000.00");
 
-        limitOrderAgent.addOrder(true, productId, amount, price);
-        limitOrderAgent.addOrder(false, productId, amount, price);
+        limitOrderAgent.addOrder(true, productId, amount, price, true);
+        limitOrderAgent.addOrder(false, productId, amount, price, true);
 
         var orderMap = limitOrderAgent.getProductToOrdersMap();
         var ordersBuyQueue = orderMap.get(productId).pendingBuyOrders.firstEntry().getValue();
@@ -104,7 +104,7 @@ public class LimitOrderAgentTest {
         BigDecimal amount = new BigDecimal("100");
         BigDecimal price = new BigDecimal("1000.00");
 
-        limitOrderAgent.addOrder(true, productId, amount, price);
+        limitOrderAgent.addOrder(true, productId, amount, price, true);
 
         var orderMap = limitOrderAgent.getProductToOrdersMap();
         var ordersQueue = orderMap.get(productId).pendingBuyOrders.firstEntry().getValue();
@@ -131,7 +131,7 @@ public class LimitOrderAgentTest {
         for (int i = 0; i < 100; i++) {
             executorService.execute(() -> {
                 BigDecimal amount = new BigDecimal("10");
-                limitOrderAgent.addOrder(true, productId, amount, price);
+                limitOrderAgent.addOrder(true, productId, amount, price, true);
                 successfulOrders.incrementAndGet();
             });
         }
@@ -152,15 +152,15 @@ public class LimitOrderAgentTest {
         BigDecimal marketPrice = new BigDecimal("1000.00");
 
         //Some buy orders
-        limitOrderAgent.addOrder(true, productId, BigDecimal.valueOf(100), BigDecimal.valueOf(1000));
-        limitOrderAgent.addOrder(true, productId, BigDecimal.valueOf(100), BigDecimal.valueOf(1001));
-        limitOrderAgent.addOrder(true, productId, BigDecimal.valueOf(100), BigDecimal.valueOf(1000.5));
+        limitOrderAgent.addOrder(true, productId, BigDecimal.valueOf(100), BigDecimal.valueOf(1000), true);
+        limitOrderAgent.addOrder(true, productId, BigDecimal.valueOf(100), BigDecimal.valueOf(1001), true);
+        limitOrderAgent.addOrder(true, productId, BigDecimal.valueOf(100), BigDecimal.valueOf(1000.5), true);
 
         //Some sell orders
-        limitOrderAgent.addOrder(false, productId, BigDecimal.valueOf(100), BigDecimal.valueOf(99));
-        limitOrderAgent.addOrder(false, productId, BigDecimal.valueOf(100), BigDecimal.valueOf(99.5));
-        limitOrderAgent.addOrder(false, productId, BigDecimal.valueOf(100), BigDecimal.valueOf(1000));
-        limitOrderAgent.addOrder(false, productId, BigDecimal.valueOf(100), BigDecimal.valueOf(1005));
+        limitOrderAgent.addOrder(false, productId, BigDecimal.valueOf(100), BigDecimal.valueOf(99), true);
+        limitOrderAgent.addOrder(false, productId, BigDecimal.valueOf(100), BigDecimal.valueOf(99.5), true);
+        limitOrderAgent.addOrder(false, productId, BigDecimal.valueOf(100), BigDecimal.valueOf(1000), true);
+        limitOrderAgent.addOrder(false, productId, BigDecimal.valueOf(100), BigDecimal.valueOf(1005), true);
 
         limitOrderAgent.priceTick(productId, marketPrice);
 
@@ -177,19 +177,19 @@ public class LimitOrderAgentTest {
         BigDecimal teslaMarketPrice = new BigDecimal("500.00");
 
         //Some buy  and sell IBM orders
-        limitOrderAgent.addOrder(true, ibmProduct, BigDecimal.valueOf(100), BigDecimal.valueOf(1000));
-        limitOrderAgent.addOrder(true, ibmProduct, BigDecimal.valueOf(100), BigDecimal.valueOf(1001));
-        limitOrderAgent.addOrder(true, ibmProduct, BigDecimal.valueOf(100), BigDecimal.valueOf(1000.5));
-        limitOrderAgent.addOrder(false, ibmProduct, BigDecimal.valueOf(100), BigDecimal.valueOf(99));
-        limitOrderAgent.addOrder(false, ibmProduct, BigDecimal.valueOf(100), BigDecimal.valueOf(99.5));
-        limitOrderAgent.addOrder(false, ibmProduct, BigDecimal.valueOf(100), BigDecimal.valueOf(1000));
-        limitOrderAgent.addOrder(false, ibmProduct, BigDecimal.valueOf(100), BigDecimal.valueOf(1005));
+        limitOrderAgent.addOrder(true, ibmProduct, BigDecimal.valueOf(100), BigDecimal.valueOf(1000), true);
+        limitOrderAgent.addOrder(true, ibmProduct, BigDecimal.valueOf(100), BigDecimal.valueOf(1001), true);
+        limitOrderAgent.addOrder(true, ibmProduct, BigDecimal.valueOf(100), BigDecimal.valueOf(1000.5), true);
+        limitOrderAgent.addOrder(false, ibmProduct, BigDecimal.valueOf(100), BigDecimal.valueOf(99), true);
+        limitOrderAgent.addOrder(false, ibmProduct, BigDecimal.valueOf(100), BigDecimal.valueOf(99.5), true);
+        limitOrderAgent.addOrder(false, ibmProduct, BigDecimal.valueOf(100), BigDecimal.valueOf(1000), true);
+        limitOrderAgent.addOrder(false, ibmProduct, BigDecimal.valueOf(100), BigDecimal.valueOf(1005), true);
 
         //Some buy and sell TSLA orders
-        limitOrderAgent.addOrder(true, teslaProduct, BigDecimal.valueOf(100), BigDecimal.valueOf(500));
-        limitOrderAgent.addOrder(true, teslaProduct, BigDecimal.valueOf(100), BigDecimal.valueOf(501));
-        limitOrderAgent.addOrder(false, teslaProduct, BigDecimal.valueOf(100), BigDecimal.valueOf(499));
-        limitOrderAgent.addOrder(false, teslaProduct, BigDecimal.valueOf(100), BigDecimal.valueOf(499.5));
+        limitOrderAgent.addOrder(true, teslaProduct, BigDecimal.valueOf(100), BigDecimal.valueOf(500), true);
+        limitOrderAgent.addOrder(true, teslaProduct, BigDecimal.valueOf(100), BigDecimal.valueOf(501), true);
+        limitOrderAgent.addOrder(false, teslaProduct, BigDecimal.valueOf(100), BigDecimal.valueOf(499), true);
+        limitOrderAgent.addOrder(false, teslaProduct, BigDecimal.valueOf(100), BigDecimal.valueOf(499.5), true);
 
 
         limitOrderAgent.priceTick(ibmProduct, ibmMarketPrice);

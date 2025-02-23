@@ -54,11 +54,11 @@ public class LimitOrderAgent implements PriceListener {
         for (Order order : ordersFromCache) {
             addOrder(order.getType() == OrderType.BUY, order.getProductId(),
                     BigDecimal.valueOf(order.getAmount()),
-                    order.getLimitPrice());
+                    order.getLimitPrice(), false);
         }
     }
 
-    public void addOrder(boolean isBuy, String productId, BigDecimal amount, BigDecimal limitPrice) {
+    public void addOrder(boolean isBuy, String productId, BigDecimal amount, BigDecimal limitPrice, boolean pushToCache) {
         Order order = Order.Builder.newInstance()
                 .orderId(UUID.randomUUID().toString())
                 .type(isBuy ? OrderType.BUY : OrderType.SELL)
@@ -73,7 +73,9 @@ public class LimitOrderAgent implements PriceListener {
         var ordersQueue = isBuy ? orders.pendingBuyOrders : orders.pendingSellOrders;
         ordersQueue.computeIfAbsent(limitPrice, k -> new ConcurrentLinkedQueue<>()).add(order);
 
-        cachePersistenceExecutor.submit(() -> cachePersistenceService.persist(order));
+        if(pushToCache) {
+            cachePersistenceExecutor.submit(() -> cachePersistenceService.persist(order));
+        }
     }
 
     @Override
